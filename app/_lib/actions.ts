@@ -19,6 +19,7 @@ const FormSchema = z.object({
 });
 
 const CreateInvoice = FormSchema.omit({ id: true, date: true });
+const UpdateInvoice = FormSchema.omit({ id: true, date: true });
 
 export async function createInvoice(formData: FormData) {
   const { customerId, amount, status } = CreateInvoice.parse({
@@ -51,6 +52,32 @@ export async function createInvoice(formData: FormData) {
   } catch (error) {
     console.error('Error creating invoice:', error);
     throw new Error('Failed to create invoice.');
+  }
+
+  revalidatePath('/dashboard/invoices');
+  redirect('/dashboard/invoices');
+}
+
+export async function updateInvoice(id: string, formData: FormData) {
+  const { customerId, amount, status } = CreateInvoice.parse({
+    customerId: formData.get('customerId'),
+    amount: formData.get('amount'),
+    status: formData.get('status'),
+  });
+  const amountInCents = amount * 100;
+
+  try {
+    const { data, error } = await supabase
+      .from('invoices')
+      .update({
+        customer_id: customerId,
+        amount: amountInCents,
+        status: status,
+      })
+      .eq('id', id);
+  } catch (error) {
+    console.error('Error updating invoice:', error);
+    throw new Error('Failed to update invoice.');
   }
 
   revalidatePath('/dashboard/invoices');

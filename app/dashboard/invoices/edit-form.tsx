@@ -9,6 +9,7 @@ import {
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { Button } from '@/app/_ui/button';
+import { updateInvoice } from '@/app/_lib/actions';
 
 export default function EditInvoiceForm({
   invoice,
@@ -17,8 +18,11 @@ export default function EditInvoiceForm({
   invoice: InvoiceForm;
   customers: CustomerField[];
 }) {
+  // * 기본 server action은 formData만을 받기 때문에 bind를 사용하여 id를 전달할 수 있도록 함
+  const updateInvoiceWithId = updateInvoice.bind(null, invoice.id);
+
   return (
-    <form>
+    <form action={updateInvoiceWithId}>
       <div className='rounded-md bg-gray-50 p-4 md:p-6'>
         {/* Customer Name */}
         <div className='mb-4'>
